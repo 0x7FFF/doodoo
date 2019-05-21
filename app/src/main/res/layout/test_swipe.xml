@@ -26,9 +26,19 @@
           
             android:layout_marginTop="500dp"
             android:onClick="logoutUser"
-            android:text="Sign Out"
+            android:text="Sign Out"/>
 
-        />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:background="@drawable/button_white"
+            android:textColor="@color/colorPrimary"
+
+            android:layout_marginTop="555dp"
+            android:onClick="goToMaps"
+            android:text="MapsDebug"/>
 
         <View
             android:layout_width="match_parent"

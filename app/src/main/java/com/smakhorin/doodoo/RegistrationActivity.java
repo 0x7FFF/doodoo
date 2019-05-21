@@ -49,13 +49,13 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         };
 
-        mRegister = (Button) findViewById(R.id.btRegister);
+        mRegister = findViewById(R.id.btRegister);
 
-        mEmail = (EditText) findViewById(R.id.email);
-        mPassword = (EditText) findViewById(R.id.password);
-        mName = (EditText) findViewById(R.id.name);
+        mEmail = findViewById(R.id.email);
+        mPassword = findViewById(R.id.password);
+        mName = findViewById(R.id.name);
 
-        mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+        mRadioGroup = findViewById(R.id.radioGroup);
 
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,7 +66,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     Toast.makeText(RegistrationActivity.this,"Pick a gender!",Toast.LENGTH_SHORT).show();
                     return;
                 }
-                final RadioButton radioButton = (RadioButton) findViewById(selectId);
+                final RadioButton radioButton = findViewById(selectId);
 
                 String x = radioButton.getText().toString();
                 if(radioButton.getText()  == null) {

@@ -27,7 +27,7 @@
                     android:background="@drawable/main_form_layout">
 
                     <ImageView
-                        android:id="@+id/imageView"
+                        android:id="@+id/iv_food"
                         android:layout_width="match_parent"
                         android:layout_height="300dp"
                         android:layout_below="@id/relative"
@@ -39,10 +39,10 @@
                         tools:srcCompat="@drawable/eat_1" />
 
                     <ImageButton
-                        android:id="@+id/ButtonName"
+                        android:id="@+id/ib_name"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:layout_below="@id/imageView"
+                        android:layout_below="@id/iv_food"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentLeft="true"
                         android:layout_marginLeft="18dp"
@@ -51,10 +51,10 @@
                         android:src="@drawable/icon" />
 
                     <ImageButton
-                        android:id="@+id/ButtonHowRest"
+                        android:id="@+id/ib_location"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:layout_below="@id/imageView"
+                        android:layout_below="@id/iv_food"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentLeft="true"
                         android:layout_marginLeft="18dp"
@@ -63,34 +63,35 @@
                         android:src="@drawable/geo_icon" />
 
                     <TextView
-                        android:id="@+id/NamePoint"
+                        android:id="@+id/tv_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/imageView"
+                        android:layout_below="@id/iv_food"
                         android:layout_marginLeft="80dp"
-                        android:layout_marginTop="33dp"
+                        android:layout_marginTop="32dp"
                         android:text="Mahorin Pizza"
                         android:textColor="@color/colorWhite"
                         android:textSize="14sp" />
 
                     <TextView
-                        android:id="@+id/HowPoint"
+                        android:id="@+id/tv_near_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/imageView"
+                        android:layout_below="@id/iv_food"
                         android:layout_marginLeft="80dp"
-                        android:layout_marginTop="99dp"
+                        android:layout_marginTop="100dp"
                         android:text="11 restaurants near you"
                         android:textColor="@color/colorWhite"
                         android:textSize="14sp" />
 
                     <TextView
-                        android:id="@+id/MoneyPay"
+                        android:id="@+id/tv_price"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/imageView"
+                        android:layout_below="@id/iv_food"
                         android:layout_alignParentRight="true"
-                        android:layout_marginTop="33dp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginRight="16dp"
                         android:text="48 p."
                         android:textColor="@color/colorWhite"
                         android:textSize="14sp" />

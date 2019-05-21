@@ -1,9 +1,12 @@
 package com.smakhorin.doodoo;
 
+import android.Manifest;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,8 +29,8 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
-    private cards cards_data[];
-    private arrayAdapter arrayAdapter;
+    private FoodCard foodCard_data[];
+    private FoodCardAdapter FoodCardAdapter;
     private int i;
     private Uri uri;
     int index = 0;
@@ -35,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     //@InjectView(R.id.frame) SwipeFlingAdapterView flingContainer;
 
     ListView listView;
-    List<cards> nowItems;
+    List<FoodCard> nowItems;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,24 +48,24 @@ public class MainActivity extends AppCompatActivity {
 
         checkUserSex();
 
-        nowItems = new ArrayList<cards>();
+        nowItems = new ArrayList<FoodCard>();
 
-        arrayAdapter = new arrayAdapter(this, R.layout.activity_main_win, nowItems );
+        FoodCardAdapter = new FoodCardAdapter(this, R.layout.activity_main_win, nowItems );
 
-        nowItems.add(new cards("Vyzamin Inc.", "TEST nuber","99","https://pp.userapi.com/c830209/v830209514/1e0827/tiyBnn-XxrI.jpg"));
-        nowItems.add(new cards("TESTE", "TEST ","78","https://pp.userapi.com/c830209/v830209514/1e081e/EfyGLl-YRqc.jpg"));
-        nowItems.add(new cards("KOKO", "uiuiuiui","777","https://pp.userapi.com/c830209/v830209514/1e0815/PkK9JN36e40.jpg"));
+        nowItems.add(new FoodCard("Vyzamin Inc.", "TEST nuber","99","https://pp.userapi.com/c830209/v830209514/1e0827/tiyBnn-XxrI.jpg"));
+        nowItems.add(new FoodCard("TESTE", "TEST ","78","https://pp.userapi.com/c830209/v830209514/1e081e/EfyGLl-YRqc.jpg"));
+        nowItems.add(new FoodCard("KOKO", "uiuiuiui","777","https://pp.userapi.com/c830209/v830209514/1e0815/PkK9JN36e40.jpg"));
 
         SwipeFlingAdapterView flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
 
-        flingContainer.setAdapter(arrayAdapter);
+        flingContainer.setAdapter(FoodCardAdapter);
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
             @Override
             public void removeFirstObjectInAdapter() {
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
                 Log.d("LIST", "removed object!");
                 nowItems.remove(0);
-                arrayAdapter.notifyDataSetChanged();
+                FoodCardAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -174,9 +177,9 @@ public class MainActivity extends AppCompatActivity {
                 if(dataSnapshot.exists()) {
                    String imageURL = "default";
                    imageURL = dataSnapshot.getValue().toString();
-                   cards item = new cards("Vyzamin Inc.", "TEST nuber","99", imageURL);
+                   FoodCard item = new FoodCard("Vyzamin Inc.", "TEST nuber","99", imageURL);
                     nowItems.add(item);
-                    arrayAdapter.notifyDataSetChanged();
+                    FoodCardAdapter.notifyDataSetChanged();
                     index++;
                 }
             }
@@ -211,6 +214,12 @@ public class MainActivity extends AppCompatActivity {
         return;
     }
 
+    public void goToMaps(View view) {
+        Intent intent = new Intent(MainActivity.this,MapsActivity.class);
+        startActivity(intent);
+        finish();
+        return;
+    }
     /*
     static void makeToast(Context ctx, String s){
         Toast.makeText(ctx, s, Toast.LENGTH_SHORT).show();
