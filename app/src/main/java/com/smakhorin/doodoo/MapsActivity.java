@@ -5,46 +5,41 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.media.Image;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.PermissionChecker;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.smakhorin.doodoo.Maps.POJO.Place;
-import com.smakhorin.doodoo.Maps.POJO.Photo;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-//import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.smakhorin.doodoo.Maps.POJO.Photo;
+import com.smakhorin.doodoo.Maps.POJO.Place;
 import com.smakhorin.doodoo.Maps.RetrofitMaps;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -54,9 +49,7 @@ import retrofit.Retrofit;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener
+        GoogleApiClient.ConnectionCallbacks
 {
 
     private GoogleMap mMap;
@@ -64,7 +57,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     double latitude;
     double longitude;
     private int PROXIMITY_RADIUS = 10000;
-    GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     Marker mCurrLocationMarker;
     LocationRequest mLocationRequest;
@@ -80,14 +72,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        checkLocationPermission();
-//        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            if(!checkLocationPermission()) {
-////                DialogFragment dfExit = new DialogFragment();
-////                dfExit.show(getSupportFragmentManager(),"Your Android doesn't support location permission");
-//                finish();
-//            }
-//        }
 
         //show error dialog if Google Play Services not available
         if (!isGooglePlayServicesAvailable()) {
@@ -137,15 +121,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
-        //Initialize Google Play Services
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                buildGoogleApiClient();
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
+        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                mFusedLocationClient.requestLocationUpdates(mLocationRequest,mLocationCallback, Looper.myLooper());
                 mMap.setMyLocationEnabled(true);
+            }else{
+                checkLocationPermission();
             }
-        } else {
-            buildGoogleApiClient();
-            mMap.setMyLocationEnabled(true);
         }
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -185,16 +172,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        Button btnShowPic = (Button)findViewById(R.id.btnShowPic);
-        btnShowPic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //photo_test();
-//                ImageView ivPic = (ImageView)findViewById(R.id.iv_place);
-//                ivPic.setVisibility(View.VISIBLE);
-                //ivPic.setImageURI("null");
-            }
-        });
     }
 
     private void build_retrofit_and_get_response(String type) {
@@ -273,14 +250,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startActivity(i);
     }
 
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-        mGoogleApiClient.connect();
-    }
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -292,8 +261,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (com.google.android.gms.location.LocationListener) this);
+            //LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (com.google.android.gms.location.LocationListener) this);
 
+        } else {
+            checkLocationPermission();
         }
     }
 
@@ -306,61 +277,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Toast.makeText(this,"Internet connection was suspended",Toast.LENGTH_LONG).show();
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-
-        Log.d("onLocationChanged", "entered");
-
-        mLastLocation = location;
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker.remove();
-        }
-        //Place current location marker
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Current Position");
-
-        // Adding colour to the marker
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-
-        // Adding Marker to the Map
-        mCurrLocationMarker = mMap.addMarker(markerOptions);
-
-        //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
-
-        Log.d("onLocationChanged", String.format("latitude:%.3f longitude:%.3f", latitude, longitude));
-
-        Log.d("onLocationChanged", "Exit");
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        if(mapFragment != null) {
-            Objects.requireNonNull(mapFragment.getView()).setVisibility(View.GONE);
-        }
-        Log.d("onConectionFailed",connectionResult.getErrorMessage());
-        Toast.makeText(this,"Internet connection was failed",Toast.LENGTH_LONG).show();
-    }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public boolean checkLocationPermission(){
@@ -394,9 +310,43 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    LocationCallback mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            for(Location location : locationResult.getLocations()) {
+                Log.d("onLocationResult", "entered");
+
+                mLastLocation = location;
+                if (mCurrLocationMarker != null) {
+                    mCurrLocationMarker.remove();
+                }
+                //Place current location marker
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                markerOptions.title("Current Position");
+
+                // Adding colour to the marker
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+
+                // Adding Marker to the Map
+                mCurrLocationMarker = mMap.addMarker(markerOptions);
+
+                //move map camera
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+
+                Log.d("onLocationChanged", String.format("latitude:%.3f longitude:%.3f", latitude, longitude));
+
+                Log.d("onLocationChanged", "Exit");
+            }
+        }
+    };
+
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -405,13 +355,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     // permission was granted. Do the
                     // contacts-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-                        if (mGoogleApiClient == null) {
-                            buildGoogleApiClient();
-                        }
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        mFusedLocationClient.requestLocationUpdates(mLocationRequest,mLocationCallback, Looper.myLooper());
                         mMap.setMyLocationEnabled(true);
                     }
 
@@ -428,24 +373,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public boolean selfPermissionGranted(String permission) {
-        // For Android < Android M, self permissions are always granted.
-        boolean result = true;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-            if (28 >= Build.VERSION_CODES.M) {
-                // targetSdkVersion >= Android M, we can
-                // use Context#checkSelfPermission
-                result = this.checkSelfPermission(permission)
-                        == PackageManager.PERMISSION_GRANTED;
-            } else {
-                // targetSdkVersion < Android M, we have to use PermissionChecker
-                result = PermissionChecker.checkSelfPermission(this, permission)
-                        == PermissionChecker.PERMISSION_GRANTED;
-            }
-        }
-
-        return result;
-    }
 }
