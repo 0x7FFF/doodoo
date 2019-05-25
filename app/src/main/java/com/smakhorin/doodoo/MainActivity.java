@@ -1,12 +1,9 @@
 package com.smakhorin.doodoo;
 
-import android.Manifest;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,10 +18,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -38,7 +37,11 @@ public class MainActivity extends AppCompatActivity {
     //@InjectView(R.id.frame) SwipeFlingAdapterView flingContainer;
 
     ListView listView;
-    List<FoodCard> nowItems;
+    List<FoodCard> foodCardItems;
+
+    List<String> foodDb = new ArrayList<>(); // List of food in Database
+    HashMap<String,HashMap<String,String>> foodData = new HashMap<>(); // Data for each food on the list (Place - Price and one row for Image)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,13 +51,69 @@ public class MainActivity extends AppCompatActivity {
 
         checkUserSex();
 
-        nowItems = new ArrayList<FoodCard>();
+        foodCardItems = new ArrayList<FoodCard>();
 
-        FoodCardAdapter = new FoodCardAdapter(this, R.layout.activity_main_win, nowItems );
+        FoodCardAdapter = new FoodCardAdapter(this, R.layout.activity_main_win, foodCardItems);
 
-        nowItems.add(new FoodCard("Vyzamin Inc.", "TEST nuber","99","https://pp.userapi.com/c830209/v830209514/1e0827/tiyBnn-XxrI.jpg"));
-        nowItems.add(new FoodCard("TESTE", "TEST ","78","https://pp.userapi.com/c830209/v830209514/1e081e/EfyGLl-YRqc.jpg"));
-        nowItems.add(new FoodCard("KOKO", "uiuiuiui","777","https://pp.userapi.com/c830209/v830209514/1e0815/PkK9JN36e40.jpg"));
+        //Fill up each food item
+        final int test = 0;
+        DatabaseReference mFirebase = FirebaseDatabase.getInstance().getReference();
+        //mFirebase.keepSynced(true);
+        mFirebase.child("Cached").child("Food").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //Fill up each food item
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    foodDb.add(childSnapshot.getKey());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        //Fill up each food item with Place-Price and image
+
+        for (int i = 0; i < foodDb.size(); i++) {
+            final String foodName = foodDb.get(i);
+            mFirebase.child("Cached").child(foodName).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    //Fill up each food item
+                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                        HashMap<String,String> temp = new HashMap<String, String>();
+                        temp.put(childSnapshot.getKey(),childSnapshot.getValue().toString());
+                        foodData.put(foodName,temp);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+        //old code - DO NOT TOUCH
+        foodCardItems.add(new FoodCard("Vyzamin Inc.", "TEST nuber","99","https://pp.userapi.com/c830209/v830209514/1e0827/tiyBnn-XxrI.jpg"));
+        foodCardItems.add(new FoodCard("TESTE", "TEST ","78","https://pp.userapi.com/c830209/v830209514/1e081e/EfyGLl-YRqc.jpg"));
+        foodCardItems.add(new FoodCard("KOKO", "uiuiuiui","777","https://pp.userapi.com/c830209/v830209514/1e0815/PkK9JN36e40.jpg"));
+
+        //try
+        for(String name : foodData.keySet()) {
+            HashMap<String,String> item = foodData.get(name);
+            Integer medium = 0;
+            Integer count = item.size();
+            String imageUrl = item.get("Image");
+            for(String placeName : item.keySet()) {
+                if(!placeName.equals("Image")) {
+                    medium += Integer.parseInt(item.get(placeName));
+                }
+            }
+            medium /= count;
+            foodCardItems.add(new FoodCard(name,count.toString(),medium.toString(),imageUrl));
+        }
 
         SwipeFlingAdapterView flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
 
@@ -64,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
             public void removeFirstObjectInAdapter() {
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
                 Log.d("LIST", "removed object!");
-                nowItems.remove(0);
+                foodCardItems.remove(0);
                 FoodCardAdapter.notifyDataSetChanged();
             }
 
@@ -178,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
                    String imageURL = "default";
                    imageURL = dataSnapshot.getValue().toString();
                    FoodCard item = new FoodCard("Vyzamin Inc.", "TEST nuber","99", imageURL);
-                    nowItems.add(item);
+                    foodCardItems.add(item);
                     FoodCardAdapter.notifyDataSetChanged();
                     index++;
                 }

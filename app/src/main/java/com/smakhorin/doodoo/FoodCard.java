@@ -1,43 +1,43 @@
 package com.smakhorin.doodoo;
 
 public class FoodCard {
-    private String NamePoint;
+    private String Name;
 
-    public String getHowPoint() {
-        return HowPoint;
+    public String getLocationCount() {
+        return locationCount;
     }
 
-    public void setHowPoint(String howPoint) {
-        HowPoint = howPoint;
+    public void setLocationCount(String locationCount) {
+        this.locationCount = locationCount;
     }
 
-    private String HowPoint;
+    private String locationCount;
 
 
-    private String MoneyPay;
+    private String Price;
     private String imageURL;
 
-    public FoodCard(String NamePoint, String HowPoint, String MoneyPay, String imageURL){
-        this.NamePoint = NamePoint;
-        this.HowPoint = HowPoint;
-        this.MoneyPay= MoneyPay;
+    public FoodCard(String Name, String locationCount, String Price, String imageURL){
+        this.Name = Name;
+        this.locationCount = locationCount;
+        this.Price = Price;
         this.imageURL = imageURL;
     }
 
-    public String getNamePoint()
+    public String getName()
     {
-        return NamePoint;
+        return Name;
     }
-    public void setNamePoint(String NamePoint){
-        this.NamePoint = NamePoint;
+    public void setName(String Name){
+        this.Name = Name;
     }
 
-    public String getMoneyPay()
+    public String getPrice()
     {
-        return MoneyPay;
+        return Price;
     }
-    public void setMoneyPay(String MoneyPay){
-        this.MoneyPay = MoneyPay;
+    public void setPrice(String Price){
+        this.Price = Price;
     }
     public String getImageURL()
     {

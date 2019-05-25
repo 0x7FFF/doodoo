@@ -32,9 +32,9 @@ public class FoodCardAdapter extends ArrayAdapter<FoodCard> {
         TextView Price = convertView.findViewById(R.id.tv_price);
         TextView HowPoint = convertView.findViewById(R.id.tv_near_count);
 
-        HowPoint.setText(card_item.getHowPoint());
-        NamePoint.setText(card_item.getNamePoint());
-        Price.setText(card_item.getMoneyPay());
+        HowPoint.setText(card_item.getLocationCount());
+        NamePoint.setText(card_item.getName());
+        Price.setText(card_item.getPrice());
         //image.setImageResource(R.mipmap.ic_launcher);
         switch(card_item.getImageURL()) {
             case "default":

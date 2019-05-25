@@ -12,7 +12,6 @@ import java.util.HashMap;
 
 public class PlaceActivity extends AppCompatActivity {
 
-    HashMap<String,String> data;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,20 +21,21 @@ public class PlaceActivity extends AppCompatActivity {
         if (extra != null) {
             String photoUrl = extra.getString("photourl");
             String name = extra.getString("name");
-            String imageUrl = "https://maps.googleapis.com/maps/api/place/photo" + "?maxwidth=1280" +
-                    "&maxheight=960" +
-                    "&photoreference=" + photoUrl +
-                    "&key=AIzaSyDN7RJFmImYAca96elyZlE5s_fhX-MMuhk";
+//            String imageUrl = "https://maps.googleapis.com/maps/api/place/photo" + "?maxwidth=1280" +
+//                    "&maxheight=960" +
+//                    "&photoreference=" + photoUrl +
+//                    "&key=AIzaSyDN7RJFmImYAca96elyZlE5s_fhX-MMuhk";
             ImageView ivPic = (ImageView) findViewById(R.id.iv_photo);
             try {
                 Glide.with(this)
-                        .load(imageUrl)
+                        .load(photoUrl)
                         .placeholder(R.drawable.img_nophoto)
                         .into(ivPic);
             }
             catch (Exception e) {
                 TextView tvError = findViewById(R.id.tv_nophoto);
                 tvError.setVisibility(View.VISIBLE);
+                e.printStackTrace();
             }
             TextView tvName = (TextView) findViewById(R.id.tv_name);
             tvName.setText(name);

@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -33,6 +34,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.smakhorin.doodoo.Maps.POJO.Photo;
 import com.smakhorin.doodoo.Maps.POJO.Place;
 import com.smakhorin.doodoo.Maps.RetrofitMaps;
@@ -63,6 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     FusedLocationProviderClient mFusedLocationClient;
     List<String> photoHtmls = new ArrayList<>();
     HashMap<String,String> data = new HashMap<>();
+    HashMap<String,String> data2 = new HashMap<>();
 
     final String url = "https://maps.googleapis.com/maps/";
 
@@ -92,6 +100,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             dfExit.show(getSupportFragmentManager(),"Couldn't load map fragment");
             finish();
         }
+
+        //Cached images
+        DatabaseReference mFirebase = FirebaseDatabase.getInstance().getReference();
+        mFirebase.child("Cached").child("Places").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    data.put(childSnapshot.getKey(),childSnapshot.getValue().toString());
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private boolean isGooglePlayServicesAvailable() {
@@ -200,9 +225,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         String vicinity = response.body().getResults().get(i).getVicinity();
                         MarkerOptions markerOptions = new MarkerOptions();
                         LatLng latLng = new LatLng(lat, lng);
-                        List<Photo> getPhotos = response.body().getResults().get(i).getPhotos();
-                        photoHtmls.add(getPhotos.get(0).getPhotoReference());
-                        data.put(placeName,getPhotos.get(0).getPhotoReference());
+//                        List<Photo> getPhotos = response.body().getResults().get(i).getPhotos();
+//                        photoHtmls.add(getPhotos.get(0).getPhotoReference());
+//                        data2.put(placeName,getPhotos.get(0).getPhotoReference());
                         // Position of Marker on Map
                         markerOptions.position(latLng);
                         // Adding Title to the Marker
@@ -215,6 +240,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
                     }
+                    int z = 4;
                 } catch (Exception e) {
                     Log.d("onResponse", "There is an error");
                     e.printStackTrace();
