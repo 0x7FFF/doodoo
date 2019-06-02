@@ -1,14 +1,12 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:padding="8dp">
-
     <FrameLayout
+        android:id="@+id/fl_review"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content">
         <TextView
             android:id="@+id/tv_review_rating"
             style="@style/TextAppearance.AppCompat.Title"
@@ -27,19 +25,14 @@
             android:textSize="16sp"
             tools:text="Stepan Makhorin" />
     </FrameLayout>
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2">
-        <TextView
-            android:id="@+id/tv_item_content"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center"
-            android:fontFamily="monospace"
-            android:textColor="#000"
-            tools:text="Very unique place with some aesthetic to it. Food was relatively cheap and tasty for it's price, so I recommend ordering more than one dish. I was very satisfied " />
-    </FrameLayout>
 
-
-</LinearLayout>
+    <TextView
+        android:id="@+id/tv_review_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fl_review"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="center_vertical|center"
+        android:fontFamily="monospace"
+        tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum at metus dolor. Orci varius natoque penatibus et magnis sed. " />
+</RelativeLayout>

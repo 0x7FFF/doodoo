@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -83,12 +84,17 @@ public class RegistrationActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(!task.isSuccessful()) {
-                            Toast.makeText(RegistrationActivity.this,"sign up error",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegistrationActivity.this,"Sign up error",Toast.LENGTH_SHORT).show();
+                            Log.d("onComplete",task.getException().getMessage());
                         }
                         else {
                             String userId = mAuth.getCurrentUser().getUid();
-                            DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(radioButton.getText().toString()).child(userId).child("name");
+                            UserDAO userDAO = UserDAO.getInstance();
+                            userDAO.setUser(mAuth.getCurrentUser());
+                            DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("name");
                             currentUserDb.setValue(name);
+                            currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("sex");
+                            currentUserDb.setValue(radioButton.getText().toString());
                             Intent intent = new Intent(RegistrationActivity.this,MainActivity.class);
                             startActivity(intent);
                             finish();

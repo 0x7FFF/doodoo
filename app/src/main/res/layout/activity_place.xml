@@ -8,6 +8,12 @@
     android:layout_height="match_parent"
     tools:context=".PlaceActivity">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.8"
+        android:background="@drawable/gradient_bg" />
+
     <FrameLayout
         android:id="@+id/frame_layout"
         android:layout_width="match_parent"

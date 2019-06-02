@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.smakhorin.doodoo.FoodCard.FoodCard;
 import com.smakhorin.doodoo.R;
 
 import java.util.List;
@@ -29,7 +28,7 @@ public class FoodCardAdapter extends ArrayAdapter<FoodCard> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.activity_main_win, parent, false);
         }
 
-        TextView NamePoint = convertView.findViewById(R.id.tv_name);
+        TextView NamePoint = convertView.findViewById(R.id.tv_place_name);
         ImageView image = convertView.findViewById(R.id.iv_food);
         TextView Price = convertView.findViewById(R.id.tv_price);
         TextView HowPoint = convertView.findViewById(R.id.tv_near_count);

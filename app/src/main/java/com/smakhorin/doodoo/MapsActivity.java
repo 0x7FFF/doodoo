@@ -44,6 +44,7 @@ import com.smakhorin.doodoo.Maps.POJO.Place;
 import com.smakhorin.doodoo.Maps.RetrofitMaps;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -100,6 +101,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 priceArray.add(Integer.parseInt(placeData.get(key)));
             }
             Collections.sort(priceArray);
+            Collections.reverse(priceArray);
         }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()

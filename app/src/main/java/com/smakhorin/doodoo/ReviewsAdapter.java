@@ -1,6 +1,7 @@
 package com.smakhorin.doodoo;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,7 +9,75 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class ReviewsAdapter  {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsViewHolder> {
     public static final String TAG = ReviewsAdapter.class.getSimpleName();
 
+    private List<Review> reviews = new ArrayList<>();
+
+    public ReviewsAdapter() {}
+
+    public ReviewsAdapter(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+
+    public void addReview(Review review) {
+        reviews.add(review);
+    }
+
+    public void clearReviews() {
+        reviews.clear();
+    }
+
+    @NonNull
+    @Override
+    public ReviewsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        Context context = viewGroup.getContext();
+        int layoutIdForListItem = R.layout.item_review;
+        LayoutInflater inflater = LayoutInflater.from(context);
+        boolean shouldAttachToParentImmediately = false;
+
+        View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
+        ReviewsViewHolder viewHolder = new ReviewsViewHolder(view);
+
+        return viewHolder;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ReviewsViewHolder holder, int i) {
+        if(reviews.size() > 0) {
+            holder.bind(reviews.get(i).getRating(), reviews.get(i).getText(), reviews.get(i).getAuthor());
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return reviews.size();
+    }
+
+    // stores and recycles views as they are scrolled off screen
+    public class ReviewsViewHolder extends RecyclerView.ViewHolder {
+        TextView mRating;
+        TextView mText;
+        TextView mAuthor;
+
+        public ReviewsViewHolder(View itemView) {
+            super(itemView);
+
+            mRating = itemView.findViewById(R.id.tv_review_rating);
+            mText = itemView.findViewById(R.id.tv_review_content);
+            mAuthor = itemView.findViewById(R.id.tv_review_author);
+        }
+
+        void bind(String rating, String text, String author) {
+            String ratingTemp = rating + "/5";
+            mRating.setText(ratingTemp);
+            mText.setText(text);
+            mAuthor.setText(author);
+        }
+
+    }
 }

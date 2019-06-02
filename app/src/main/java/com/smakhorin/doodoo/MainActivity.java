@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     List<FoodCard> foodCardItems;
 
-    List<String> foodDb = new ArrayList<>(); // List of bg_food in Database
-    HashMap<String,List<HashMap<String,String>>> foodData = new HashMap<>(); // Data for each bg_food on the list (Place - Price and one row for Image)
+    List<String> foodDb = new ArrayList<>(); // List of Food names in Database
+    HashMap<String,List<HashMap<String,String>>> foodData = new HashMap<>(); // Data for each food on the list (Place - Price and one row for Image)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
                 //Fill up each bg_food item_food
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                     foodDb.add(childSnapshot.getKey());
+                    //TODO: Rewrite this whole structure in one DB call and put it into DAO
+                    Object x = childSnapshot.getValue();
+                    int z = 4;
                 }
                 fillUpDatabase();
                 getFoodFromDatabase();

@@ -13,22 +13,30 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class PlaceActivity extends AppCompatActivity {
+
+    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    List<Review> reviews = new ArrayList<>();
+    String placeName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place);
-//        Intent intent = getIntent();
-//        Bundle extra = intent.getExtras();
-//        String photoUrl, restaurantName;
-//        if(extra != null) {
-//            photoUrl = extra.getString("photourl");
-//            restaurantName = extra.getString("name");
-//        }
+
+
         BottomNavigationView bottomNavigationView = (BottomNavigationView)
                 findViewById(R.id.navigation);
 
@@ -42,7 +50,7 @@ public class PlaceActivity extends AppCompatActivity {
                                 selectedFragment = GeneralFragment.getInstance();
                                 break;
                             case R.id.action_item2:
-                                selectedFragment = WriteReviewFragment.newInstance();
+                                selectedFragment = WriteReviewFragment.getInstance();
                                 break;
                         }
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -57,6 +65,7 @@ public class PlaceActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle extra = intent.getExtras();
         if(extra != null) {
+            placeName = extra.getString("name");
             gf.setArguments(extra);
         }
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -65,5 +74,42 @@ public class PlaceActivity extends AppCompatActivity {
 
         //Used to select an item programmatically
         //bottomNavigationView.getMenu().getItem(2).setChecked(true);
+    }
+
+    public void submitReview() {
+        UserDAO userDAO = UserDAO.getInstance();
+        String userId = userDAO.getUser().getUid();
+        String userName = UserDAO.getName();
+        DatabaseReference currentChildDb = mDatabase.child("Reviews").child(placeName).child(userId).child("rating");
+        WriteReviewFragment instance = WriteReviewFragment.getInstance();
+        currentChildDb.setValue(instance.getRating());
+        currentChildDb = mDatabase.child("Reviews").child(placeName).child(userId).child("text");
+        currentChildDb.setValue(instance.getText());
+        currentChildDb = mDatabase.child("Reviews").child(placeName).child(userId).child("name");
+        currentChildDb.setValue(userName);
+    }
+
+    private void getAllReviews() {
+        DatabaseReference currentChildDb = mDatabase.child("Reviews").child(placeName);
+        currentChildDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    String x = childSnapshot.getKey();
+                    HashMap<String,Object> val = (HashMap<String, Object>) childSnapshot.getValue();
+                    String name = val.get("name").toString();
+                    String rating = val.get("rating").toString();
+                    String text = val.get("text").toString();
+                    Review review = new Review(name,rating,text);
+                    reviews.add(review);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }
