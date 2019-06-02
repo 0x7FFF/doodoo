@@ -1,7 +1,6 @@
 package com.smakhorin.doodoo;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -20,52 +19,51 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
+import com.smakhorin.doodoo.FoodCard.FoodCard;
+import com.smakhorin.doodoo.FoodCard.FoodCardAdapter;
 
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 
 public class MainActivity extends AppCompatActivity {
-    private FoodCard foodCard_data[];
-    private FoodCardAdapter FoodCardAdapter;
-    private int i;
-    private Uri uri;
+    private com.smakhorin.doodoo.FoodCard.FoodCardAdapter foodCardAdapter;
     int index = 0;
     private FirebaseAuth mAuth;
-    //@InjectView(R.id.frame) SwipeFlingAdapterView flingContainer;
 
-    ListView listView;
     List<FoodCard> foodCardItems;
 
-    List<String> foodDb = new ArrayList<>(); // List of food in Database
-    HashMap<String,HashMap<String,String>> foodData = new HashMap<>(); // Data for each food on the list (Place - Price and one row for Image)
+    List<String> foodDb = new ArrayList<>(); // List of bg_food in Database
+    HashMap<String,List<HashMap<String,String>>> foodData = new HashMap<>(); // Data for each bg_food on the list (Place - Price and one row for Image)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.test_swipe);
+        setContentView(R.layout.activity_main_back);
 
         mAuth = FirebaseAuth.getInstance();
 
-        checkUserSex();
+        //checkUserSex();
+        //getFoodFromDatabase();
 
         foodCardItems = new ArrayList<FoodCard>();
 
-        FoodCardAdapter = new FoodCardAdapter(this, R.layout.activity_main_win, foodCardItems);
+        foodCardAdapter = new FoodCardAdapter(this, R.layout.activity_main_win, foodCardItems);
 
-        //Fill up each food item
-        final int test = 0;
+        //Fill up each bg_food item_food
         DatabaseReference mFirebase = FirebaseDatabase.getInstance().getReference();
-        //mFirebase.keepSynced(true);
         mFirebase.child("Cached").child("Food").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //Fill up each food item
+                //Fill up each bg_food item_food
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                     foodDb.add(childSnapshot.getKey());
                 }
+                fillUpDatabase();
+                getFoodFromDatabase();
             }
 
             @Override
@@ -73,58 +71,17 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        //Fill up each food item with Place-Price and image
-
-        for (int i = 0; i < foodDb.size(); i++) {
-            final String foodName = foodDb.get(i);
-            mFirebase.child("Cached").child(foodName).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    //Fill up each food item
-                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                        HashMap<String,String> temp = new HashMap<String, String>();
-                        temp.put(childSnapshot.getKey(),childSnapshot.getValue().toString());
-                        foodData.put(foodName,temp);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        }
-
-        //old code - DO NOT TOUCH
-        foodCardItems.add(new FoodCard("Vyzamin Inc.", "TEST nuber","99","https://pp.userapi.com/c830209/v830209514/1e0827/tiyBnn-XxrI.jpg"));
-        foodCardItems.add(new FoodCard("TESTE", "TEST ","78","https://pp.userapi.com/c830209/v830209514/1e081e/EfyGLl-YRqc.jpg"));
-        foodCardItems.add(new FoodCard("KOKO", "uiuiuiui","777","https://pp.userapi.com/c830209/v830209514/1e0815/PkK9JN36e40.jpg"));
-
-        //try
-        for(String name : foodData.keySet()) {
-            HashMap<String,String> item = foodData.get(name);
-            Integer medium = 0;
-            Integer count = item.size();
-            String imageUrl = item.get("Image");
-            for(String placeName : item.keySet()) {
-                if(!placeName.equals("Image")) {
-                    medium += Integer.parseInt(item.get(placeName));
-                }
-            }
-            medium /= count;
-            foodCardItems.add(new FoodCard(name,count.toString(),medium.toString(),imageUrl));
-        }
 
         SwipeFlingAdapterView flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
 
-        flingContainer.setAdapter(FoodCardAdapter);
+        flingContainer.setAdapter(foodCardAdapter);
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
             @Override
             public void removeFirstObjectInAdapter() {
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
                 Log.d("LIST", "removed object!");
                 foodCardItems.remove(0);
-                FoodCardAdapter.notifyDataSetChanged();
+                foodCardAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -138,6 +95,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onRightCardExit(Object dataObject) {
                 Toast.makeText(MainActivity.this,"right",Toast.LENGTH_SHORT).show();//
+                FoodCard card = (FoodCard)dataObject;
+                String name = card.getName();
+                List<HashMap<String, String>> items = foodData.get(name);
+                if(items != null) {
+                    HashMap<String, String> placeData = new HashMap<>();
+                    for (HashMap<String, String> listItem : items) {
+                        Set<String> keys = listItem.keySet();
+                        String key = keys.iterator().next();
+                        if (!key.equals("Image")) {
+                            placeData.put(key, listItem.get(key));
+                        }
+                    }
+                    Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();//
+                    Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                    intent.putExtra("placeData", placeData);
+                    startActivity(intent);
+                } else {
+                   Toast.makeText(MainActivity.this,"There are no places for that bg_food",Toast.LENGTH_LONG).show();
+                }
+
             }
 
             @Override
@@ -164,6 +141,30 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void fillUpDatabase() {
+        DatabaseReference mFirebase = FirebaseDatabase.getInstance().getReference();
+        for (int i = 0; i < foodDb.size(); i++) {
+            final String foodName = foodDb.get(i);
+            mFirebase.child("Cached").child("Food").child(foodName).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    //Fill up each bg_food item_food
+                    List<HashMap<String,String>> item = new ArrayList<>();
+                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                        HashMap<String,String> temp = new HashMap<>();
+                        temp.put(childSnapshot.getKey(),childSnapshot.getValue().toString());
+                        item.add(temp);
+                    }
+                    foodData.put(foodName,item);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
     private String userSex;
     private String oppositeUserSex;
 
@@ -177,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                 if (dataSnapshot.getKey().equals(user.getUid())) {
                     userSex = "Male";
                     oppositeUserSex = "Female";
-                    getOppositeSexUsers();
+                    getFoodFromDatabase();
                 }
             }
 
@@ -205,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                 if (dataSnapshot.getKey().equals(user.getUid())) {
                     userSex = "Female";
                     oppositeUserSex = "Male";
-                    getOppositeSexUsers();
+                    getFoodFromDatabase();
                 }
             }
 
@@ -227,35 +228,82 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void getOppositeSexUsers() {
-        // oppositeSexDb = FirebaseDatabase.getInstance().getReference().child("Users").child(oppositeUserSex);
-        DatabaseReference foodDb = FirebaseDatabase.getInstance().getReference().child("Food").child("Pizza");
-        foodDb.addChildEventListener(new ChildEventListener() {
+    public void getFoodFromDatabase() {
+        DatabaseReference foodDb = FirebaseDatabase.getInstance().getReference().child("Cached").child("Food");
+        /*
+//        foodDb.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                if(dataSnapshot.exists()) {
+//                    for(String name : foodData.keySet()) {
+//                        List<HashMap<String, String>> items = foodData.get(name);
+//                        Integer medium = 0;
+//                        Integer count = items.size()-1;
+//                        String imageUrl = "";
+//                        for(HashMap<String, String> listItem : items) {
+//                            Set<String> keys = listItem.keySet();
+//                            String key = keys.iterator().next();
+//                            if(key.equals("Image")) {
+//                                imageUrl = listItem.get(key);
+//                            }
+//                            else {
+//                                medium += Integer.parseInt(listItem.get(key));
+//                            }
+//                        }
+//                        medium /= count;
+//                        foodCardItems.add(new FoodCard(name,count.toString(),medium.toString(),imageUrl));
+//                    }
+//                    foodCardAdapter.notifyDataSetChanged();
+//                    index++;
+//                }
+//            }
+//
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+*/
+        foodDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
-                   String imageURL = "default";
-                   imageURL = dataSnapshot.getValue().toString();
-                   FoodCard item = new FoodCard("Vyzamin Inc.", "TEST nuber","99", imageURL);
-                    foodCardItems.add(item);
-                    FoodCardAdapter.notifyDataSetChanged();
+                    for(String name : foodData.keySet()) {
+                        List<HashMap<String, String>> items = foodData.get(name);
+                        Integer medium = 0;
+                        Integer count = items.size()-1;
+                        String imageUrl = "";
+                        for(HashMap<String, String> listItem : items) {
+                            Set<String> keys = listItem.keySet();
+                            String key = keys.iterator().next();
+                            if(key.equals("Image")) {
+                                imageUrl = listItem.get(key);
+                            }
+                            else {
+                                medium += Integer.parseInt(listItem.get(key));
+                            }
+                        }
+                        medium /= count;
+                        foodCardItems.add(new FoodCard(name,count.toString(),medium.toString(),imageUrl));
+                    }
+                    foodCardAdapter.notifyDataSetChanged();
                     index++;
                 }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
             }
 
             @Override

@@ -1,4 +1,4 @@
-package com.smakhorin.doodoo;
+package com.smakhorin.doodoo.FoodCard;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.smakhorin.doodoo.FoodCard.FoodCard;
+import com.smakhorin.doodoo.R;
 
 import java.util.List;
 

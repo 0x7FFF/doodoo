@@ -1,44 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    android:id="@+id/activity_main"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PlaceActivity">
-    <LinearLayout
+
+    <FrameLayout
+        android:id="@+id/frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/navigation"
+        android:animateLayoutChanges="true">
+
+    </FrameLayout>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="16dp"/>
-        <ImageView
-            android:id="@+id/iv_photo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="16dp"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/tv_nophoto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="invisible"
-                android:textSize="36sp"
-                android:textStyle="bold"
-                android:textAlignment="center"
-                android:text="@string/error_nophoto"/>
-            <TextView
-                android:id="@+id/tv_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="36sp"
-                android:textAlignment="center"
-                android:text="@string/name_placeholder"/>
-        </LinearLayout>
-    </LinearLayout>
-</FrameLayout>
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"
+        app:itemIconTint="@color/nav_item_state_list"
+        app:itemTextColor="@color/nav_item_state_list"
+        app:menu="@menu/bottom_navigation_items"/>
+</RelativeLayout>

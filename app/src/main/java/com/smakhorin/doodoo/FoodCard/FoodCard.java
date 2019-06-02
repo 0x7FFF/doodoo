@@ -1,4 +1,4 @@
-package com.smakhorin.doodoo;
+package com.smakhorin.doodoo.FoodCard;
 
 public class FoodCard {
     private String Name;

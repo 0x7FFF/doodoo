@@ -26,7 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.test_login);
+        setContentView(R.layout.activity_login);
         getSupportActionBar().hide();
         mAuth = FirebaseAuth.getInstance();
         firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(!task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this,"sign up error",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this,"Ыign up error",Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

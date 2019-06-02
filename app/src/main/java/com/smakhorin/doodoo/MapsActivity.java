@@ -30,21 +30,21 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.smakhorin.doodoo.Maps.POJO.Photo;
 import com.smakhorin.doodoo.Maps.POJO.Place;
 import com.smakhorin.doodoo.Maps.RetrofitMaps;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -70,10 +70,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     FusedLocationProviderClient mFusedLocationClient;
     List<String> photoHtmls = new ArrayList<>();
     HashMap<String,String> data = new HashMap<>();
-    HashMap<String,String> data2 = new HashMap<>();
+    HashMap<String,String> placeData = new HashMap<>();
+    ArrayList<Integer> priceArray = new ArrayList<>();
 
     final String url = "https://maps.googleapis.com/maps/";
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +92,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d("onCreate", "Google Play Services available. Continuing.");
         }
 
+        Bundle extra = getIntent().getExtras();
+        if(extra != null) {
+            Intent intent = getIntent();
+            placeData = (HashMap<String, String>)intent.getSerializableExtra("placeData");
+            for(String key : placeData.keySet()) {
+                priceArray.add(Integer.parseInt(placeData.get(key)));
+            }
+            Collections.sort(priceArray);
+        }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -177,29 +188,72 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnRestaurant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                build_retrofit_and_get_response_with_data("restaurant");
+            }
+        });
+
+        Button btnRestaurantDebug = (Button) findViewById(R.id.btnRestaurantDebug);
+        btnRestaurantDebug.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 build_retrofit_and_get_response("restaurant");
-            }
-        });
-
-        Button btnHospital = (Button) findViewById(R.id.btnHospital);
-        btnHospital.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                build_retrofit_and_get_response("hospital");
-            }
-        });
-
-        Button btnSchool = (Button) findViewById(R.id.btnSchool);
-        btnSchool.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                build_retrofit_and_get_response("school");
             }
         });
 
     }
 
     private void build_retrofit_and_get_response(String type) {
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(url)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        final RetrofitMaps service = retrofit.create(RetrofitMaps.class);
+
+        Call<Place> call = service.getNearbyPlaces(type, latitude + "," + longitude, PROXIMITY_RADIUS);
+
+        call.enqueue(new Callback<Place>() {
+            @Override
+            public void onResponse(Response<Place> response, Retrofit retrofit) {
+
+                try {
+                    mMap.clear();
+                    // This loop will go through all the results and add marker on each location.
+                    for (int i = 0; i < response.body().getResults().size(); i++) {
+                        Double lat = response.body().getResults().get(i).getGeometry().getLocation().getLat();
+                        Double lng = response.body().getResults().get(i).getGeometry().getLocation().getLng();
+                        String placeName = response.body().getResults().get(i).getName();
+                        String vicinity = response.body().getResults().get(i).getVicinity();
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        LatLng latLng = new LatLng(lat, lng);
+                        // Position of Marker on Map
+                        markerOptions.position(latLng);
+                        // Adding Title to the Marker
+                        markerOptions.title(placeName + " : " + vicinity);
+                        // Adding Marker to the Camera.
+                        Marker m = mMap.addMarker(markerOptions);
+                        // Adding colour to the marker
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        // move map camera
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+                    }
+                    int z = 4;
+                } catch (Exception e) {
+                    Log.d("onResponse", "There is an error");
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("onFailure", t.toString());
+            }
+        });
+
+    }
+
+    private void build_retrofit_and_get_response_with_data(String type) {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
@@ -219,26 +273,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.clear();
                     // This loop will go through all the results and add marker on each location.
                     for (int i = 0; i < response.body().getResults().size(); i++) {
-                        Double lat = response.body().getResults().get(i).getGeometry().getLocation().getLat();
-                        Double lng = response.body().getResults().get(i).getGeometry().getLocation().getLng();
                         String placeName = response.body().getResults().get(i).getName();
-                        String vicinity = response.body().getResults().get(i).getVicinity();
-                        MarkerOptions markerOptions = new MarkerOptions();
-                        LatLng latLng = new LatLng(lat, lng);
-//                        List<Photo> getPhotos = response.body().getResults().get(i).getPhotos();
-//                        photoHtmls.add(getPhotos.get(0).getPhotoReference());
-//                        data2.put(placeName,getPhotos.get(0).getPhotoReference());
-                        // Position of Marker on Map
-                        markerOptions.position(latLng);
-                        // Adding Title to the Marker
-                        markerOptions.title(placeName + " : " + vicinity);
-                        // Adding Marker to the Camera.
-                        Marker m = mMap.addMarker(markerOptions);
-                        // Adding colour to the marker
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                        // move map camera
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+
+                        for(String key : placeData.keySet()) {
+                            if(key.equals(placeName)) {
+                                Double lat = response.body().getResults().get(i).getGeometry().getLocation().getLat();
+                                Double lng = response.body().getResults().get(i).getGeometry().getLocation().getLng();
+                                Double rating = response.body().getResults().get(i).getRating();
+                                String vicinity = response.body().getResults().get(i).getVicinity();
+                                MarkerOptions markerOptions = new MarkerOptions();
+                                LatLng latLng = new LatLng(lat, lng);
+                                // Position of Marker on Map
+                                markerOptions.position(latLng);
+                                // Adding Title to the Marker
+                                markerOptions.title(placeName + " : " + vicinity + "(rating:" + rating + ":)");
+                                // Adding colour to the marker
+                                Integer price = Integer.parseInt(placeData.get(key));
+                                int index = priceArray.indexOf(price);
+                                int factor = priceArray.size();
+                                float color = index*(120/factor);
+                                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(color));
+                                // Adding Marker to the Camera.
+                                Marker m = mMap.addMarker(markerOptions);
+                                // move map camera
+                                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                                mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+                            }
+                        }
                     }
                     int z = 4;
                 } catch (Exception e) {
@@ -276,6 +337,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startActivity(i);
     }
 
+    private BitmapDescriptor getMarkerIcon(int color,int factor) {
+        return BitmapDescriptorFactory.defaultMarker(color*(120/factor));
+    }
 
     @SuppressLint("RestrictedApi")
     @Override
