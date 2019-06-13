@@ -1,4 +1,4 @@
-package com.smakhorin.doodoo;
+package com.smakhorin.doodoo.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -30,7 +30,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -40,14 +39,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.smakhorin.doodoo.Maps.POJO.Place;
-import com.smakhorin.doodoo.Maps.RetrofitMaps;
+import com.smakhorin.doodoo.R;
+import com.smakhorin.doodoo.maps.POJO.Place;
+import com.smakhorin.doodoo.maps.RetrofitMaps;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -190,7 +192,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnRestaurant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                build_retrofit_and_get_response_with_data("restaurant");
+                buildRetrofitAndGetResponse("restaurant");
             }
         });
 
@@ -202,6 +204,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+//        final Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                buildRetrofitAndGetResponse("restaurant");
+//            }
+//        }, 5000);
+//
+//        ScheduledExecutorService scheduler =
+//                Executors.newSingleThreadScheduledExecutor();
+//
+//        scheduler.scheduleAtFixedRate
+//                (new Runnable() {
+//                    public void run() {
+//                        buildRetrofitAndGetResponse("restaurant");
+//                    }
+//                }, 11, 45, TimeUnit.SECONDS);
     }
 
     private void build_retrofit_and_get_response(String type) {
@@ -255,7 +274,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void build_retrofit_and_get_response_with_data(String type) {
+    private void buildRetrofitAndGetResponse(String type) {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
@@ -288,7 +307,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 // Position of Marker on Map
                                 markerOptions.position(latLng);
                                 // Adding Title to the Marker
-                                markerOptions.title(placeName + " : " + vicinity + "(rating:" + rating + ":)");
+                                markerOptions.title(placeName + " : " + vicinity + "(rating:" + rating + "/5)");
                                 // Adding colour to the marker
                                 Integer price = Integer.parseInt(placeData.get(key));
                                 int index = priceArray.indexOf(price);
@@ -337,10 +356,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent i = new Intent(this,PlaceActivity.class);
         i.putExtra("data",data);
         startActivity(i);
-    }
-
-    private BitmapDescriptor getMarkerIcon(int color,int factor) {
-        return BitmapDescriptorFactory.defaultMarker(color*(120/factor));
     }
 
     @SuppressLint("RestrictedApi")

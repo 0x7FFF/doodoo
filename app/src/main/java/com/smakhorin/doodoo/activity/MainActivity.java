@@ -1,40 +1,42 @@
-package com.smakhorin.doodoo;
+package com.smakhorin.doodoo.activity;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
-import com.smakhorin.doodoo.FoodCard.FoodCard;
-import com.smakhorin.doodoo.FoodCard.FoodCardAdapter;
+import com.smakhorin.doodoo.R;
+import com.smakhorin.doodoo.foodcard.FoodCard;
+import com.smakhorin.doodoo.foodcard.FoodCardAdapter;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 
 public class MainActivity extends AppCompatActivity {
-    private com.smakhorin.doodoo.FoodCard.FoodCardAdapter foodCardAdapter;
+    private com.smakhorin.doodoo.foodcard.FoodCardAdapter foodCardAdapter;
     int index = 0;
     private FirebaseAuth mAuth;
 
     List<FoodCard> foodCardItems;
+    List<FoodCard> foodCardsCache = new ArrayList<>();
 
     List<String> foodDb = new ArrayList<>(); // List of Food names in Database
     HashMap<String,List<HashMap<String,String>>> foodData = new HashMap<>(); // Data for each food on the list (Place - Price and one row for Image)
@@ -144,6 +146,34 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int itemId = item.getItemId();
+
+        switch (itemId) {
+            /*
+             * When you click the reset menu item, we want to start all over
+             * and display the pretty gradient again. There are a few similar
+             * ways of doing this, with this one being the simplest of those
+             * ways. (in our humble opinion)
+             */
+            case R.id.action_refresh:
+                foodCardItems.addAll(foodCardsCache);
+                Collections.shuffle(foodCardItems);
+                foodCardAdapter.notifyDataSetChanged();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     public void fillUpDatabase() {
         DatabaseReference mFirebase = FirebaseDatabase.getInstance().getReference();
         for (int i = 0; i < foodDb.size(); i++) {
@@ -168,120 +198,10 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-    private String userSex;
-    private String oppositeUserSex;
-
-    public void checkUserSex() {
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        DatabaseReference maleDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Male");
-        maleDb.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if (dataSnapshot.getKey().equals(user.getUid())) {
-                    userSex = "Male";
-                    oppositeUserSex = "Female";
-                    getFoodFromDatabase();
-                }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-
-        DatabaseReference femaleDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Female");
-        femaleDb.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if (dataSnapshot.getKey().equals(user.getUid())) {
-                    userSex = "Female";
-                    oppositeUserSex = "Male";
-                    getFoodFromDatabase();
-                }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
 
     public void getFoodFromDatabase() {
         DatabaseReference foodDb = FirebaseDatabase.getInstance().getReference().child("Cached").child("Food");
-        /*
-//        foodDb.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                if(dataSnapshot.exists()) {
-//                    for(String name : foodData.keySet()) {
-//                        List<HashMap<String, String>> items = foodData.get(name);
-//                        Integer medium = 0;
-//                        Integer count = items.size()-1;
-//                        String imageUrl = "";
-//                        for(HashMap<String, String> listItem : items) {
-//                            Set<String> keys = listItem.keySet();
-//                            String key = keys.iterator().next();
-//                            if(key.equals("Image")) {
-//                                imageUrl = listItem.get(key);
-//                            }
-//                            else {
-//                                medium += Integer.parseInt(listItem.get(key));
-//                            }
-//                        }
-//                        medium /= count;
-//                        foodCardItems.add(new FoodCard(name,count.toString(),medium.toString(),imageUrl));
-//                    }
-//                    foodCardAdapter.notifyDataSetChanged();
-//                    index++;
-//                }
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-*/
+
         foodDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -304,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
                         medium /= count;
                         foodCardItems.add(new FoodCard(name,count.toString(),medium.toString(),imageUrl));
                     }
+                    foodCardsCache.addAll(foodCardItems);
                     foodCardAdapter.notifyDataSetChanged();
                     index++;
                 }
@@ -330,22 +251,5 @@ public class MainActivity extends AppCompatActivity {
         finish();
         return;
     }
-    /*
-    static void makeToast(Context ctx, String s){
-        Toast.makeText(ctx, s, Toast.LENGTH_SHORT).show();
-    }
-
-
-    @OnClick(R.id.right)
-    public void right() {
-        flingContainer.getTopCardListener().selectRight();
-    }
-
-    @OnClick(R.id.left)
-    public void left() {
-        flingContainer.getTopCardListener().selectLeft();
-    }*/
-
-
 
 }

@@ -1,27 +1,23 @@
-package com.smakhorin.doodoo;
+package com.smakhorin.doodoo.reviews;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.smakhorin.doodoo.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsViewHolder> {
-    public static final String TAG = ReviewsAdapter.class.getSimpleName();
 
     private List<Review> reviews = new ArrayList<>();
 
     public ReviewsAdapter() {}
-
-    public ReviewsAdapter(List<Review> reviews) {
-        this.reviews = reviews;
-    }
 
 
     public void addReview(Review review) {

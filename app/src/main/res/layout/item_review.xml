@@ -15,6 +15,7 @@
             android:layout_gravity="center_vertical|start"
             android:fontFamily="monospace"
             android:textSize="32sp"
+            android:textColor="@color/colorWhite"
             tools:text="5/5" />
         <TextView
             android:id="@+id/tv_review_author"
@@ -23,6 +24,7 @@
             android:layout_gravity="center_vertical|end"
             android:fontFamily="monospace"
             android:textSize="16sp"
+            android:textColor="@color/colorWhite"
             tools:text="Stepan Makhorin" />
     </FrameLayout>
 
@@ -34,5 +36,6 @@
         android:layout_marginTop="8dp"
         android:layout_gravity="center_vertical|center"
         android:fontFamily="monospace"
+        android:textColor="@color/colorWhite"
         tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum at metus dolor. Orci varius natoque penatibus et magnis sed. " />
 </RelativeLayout>

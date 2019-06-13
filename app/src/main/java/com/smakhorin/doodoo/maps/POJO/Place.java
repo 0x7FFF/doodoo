@@ -1,4 +1,4 @@
-package com.smakhorin.doodoo.Maps.POJO;
+package com.smakhorin.doodoo.maps.POJO;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

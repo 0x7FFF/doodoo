@@ -1,4 +1,4 @@
-package com.smakhorin.doodoo;
+package com.smakhorin.doodoo.activity;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -8,27 +8,21 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.smakhorin.doodoo.fragment.GeneralFragment;
+import com.smakhorin.doodoo.R;
+import com.smakhorin.doodoo.UserDAO;
+import com.smakhorin.doodoo.fragment.WriteReviewFragment;
+import com.smakhorin.doodoo.reviews.Review;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class PlaceActivity extends AppCompatActivity {
 
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    List<Review> reviews = new ArrayList<>();
     String placeName = "";
 
     @Override
@@ -89,27 +83,4 @@ public class PlaceActivity extends AppCompatActivity {
         currentChildDb.setValue(userName);
     }
 
-    private void getAllReviews() {
-        DatabaseReference currentChildDb = mDatabase.child("Reviews").child(placeName);
-        currentChildDb.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                    String x = childSnapshot.getKey();
-                    HashMap<String,Object> val = (HashMap<String, Object>) childSnapshot.getValue();
-                    String name = val.get("name").toString();
-                    String rating = val.get("rating").toString();
-                    String text = val.get("text").toString();
-                    Review review = new Review(name,rating,text);
-                    reviews.add(review);
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
 }

@@ -1,6 +1,6 @@
-package com.smakhorin.doodoo.Maps;
+package com.smakhorin.doodoo.maps;
 
-import com.smakhorin.doodoo.Maps.POJO.Place;
+import com.smakhorin.doodoo.maps.POJO.Place;
 
 import retrofit.Call;
 import retrofit.http.GET;

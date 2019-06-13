@@ -1,4 +1,4 @@
-package com.smakhorin.doodoo;
+package com.smakhorin.doodoo.fragment;
 
 
 import android.os.Bundle;
@@ -19,10 +19,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.smakhorin.doodoo.R;
+import com.smakhorin.doodoo.reviews.Review;
+import com.smakhorin.doodoo.reviews.ReviewsAdapter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.

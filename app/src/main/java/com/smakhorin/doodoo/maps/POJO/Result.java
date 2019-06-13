@@ -1,4 +1,4 @@
-package com.smakhorin.doodoo.Maps.POJO;
+package com.smakhorin.doodoo.maps.POJO;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -19,9 +19,6 @@ public class Result {
     @SerializedName("name")
     @Expose
     private String name;
-    @SerializedName("opening_hours")
-    @Expose
-    private OpeningHours openingHours;
     @SerializedName("photos")
     @Expose
     private List<Photo> photos = new ArrayList<Photo>();
@@ -43,10 +40,6 @@ public class Result {
     @SerializedName("vicinity")
     @Expose
     private String vicinity;
-    @SerializedName("price_level")
-    @Expose
-    private Integer priceLevel;
-
     /**
      *
      * @return
@@ -119,23 +112,6 @@ public class Result {
         this.name = name;
     }
 
-    /**
-     *
-     * @return
-     * The openingHours
-     */
-    public OpeningHours getOpeningHours() {
-        return openingHours;
-    }
-
-    /**
-     *
-     * @param openingHours
-     * The opening_hours
-     */
-    public void setOpeningHours(OpeningHours openingHours) {
-        this.openingHours = openingHours;
-    }
 
     /**
      *
@@ -264,21 +240,4 @@ public class Result {
         this.vicinity = vicinity;
     }
 
-    /**
-     *
-     * @return
-     * The priceLevel
-     */
-    public Integer getPriceLevel() {
-        return priceLevel;
-    }
-
-    /**
-     *
-     * @param priceLevel
-     * The price_level
-     */
-    public void setPriceLevel(Integer priceLevel) {
-        this.priceLevel = priceLevel;
-    }
 }

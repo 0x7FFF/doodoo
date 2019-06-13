@@ -1,11 +1,9 @@
-package com.smakhorin.doodoo;
+package com.smakhorin.doodoo.reviews;
 
 public class Review {
     private String rating;
     private String author;
     private String text;
-
-    public Review() {}
 
     public Review(String author, String rating, String text) {
         this.author = author;

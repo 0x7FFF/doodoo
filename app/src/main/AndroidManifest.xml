@@ -18,13 +18,13 @@
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
-        <activity android:name=".PlaceActivity"
+        <activity android:name=".activity.PlaceActivity"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".MapsActivity"
+        <activity android:name=".activity.MapsActivity"
             android:label="Map"/>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".RegistrationActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".activity.MainActivity" />
+        <activity android:name=".activity.RegistrationActivity" />
+        <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

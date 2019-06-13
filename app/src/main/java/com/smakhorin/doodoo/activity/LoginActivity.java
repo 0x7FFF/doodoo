@@ -1,4 +1,4 @@
-package com.smakhorin.doodoo;
+package com.smakhorin.doodoo.activity;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -14,9 +14,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.smakhorin.doodoo.R;
+import com.smakhorin.doodoo.UserDAO;
 
 public class LoginActivity extends AppCompatActivity {
-    private Button mLogin, mSignup;
 
     private EditText mEmail, mPassword;
 
@@ -44,8 +45,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
-        mLogin = (Button) findViewById(R.id.btSignIn);
-        mSignup = (Button) findViewById(R.id.btSignUp);
+        Button mLogin = (Button) findViewById(R.id.btSignIn);
+        Button mSignup = (Button) findViewById(R.id.btSignUp);
 
         mEmail = (EditText) findViewById(R.id.email);
         mPassword = (EditText) findViewById(R.id.password);
@@ -77,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         mSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this,RegistrationActivity.class);
+                Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
                 startActivity(intent);
                 finish();
             }

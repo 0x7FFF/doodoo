@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".PlaceActivity">
+    tools:context=".activity.PlaceActivity">
     <EditText
         android:id="@+id/et_review"
         android:layout_width="match_parent"
@@ -25,6 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Rating"
+            android:textColor="@color/colorWhite"
             android:gravity="center|top"/>
         <RadioGroup
             android:id="@+id/rg_rating"
@@ -36,26 +37,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textColor="@color/colorWhite"
                 android:text="1"/>
             <RadioButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textColor="@color/colorWhite"
                 android:text="2"/>
             <RadioButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textColor="@color/colorWhite"
                 android:text="3"/>
             <RadioButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textColor="@color/colorWhite"
                 android:text="4"/>
             <RadioButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textColor="@color/colorWhite"
                 android:text="5"/>
         </RadioGroup>
     </FrameLayout>
@@ -64,5 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:background="@drawable/button_white"
+        android:textColor="@color/colorPrimary"
         android:text="@string/submit" />
 </LinearLayout>

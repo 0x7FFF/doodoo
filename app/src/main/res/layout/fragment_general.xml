@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".PlaceActivity">
+    tools:context=".activity.PlaceActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -20,6 +20,7 @@
             android:id="@+id/iv_place_photo"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:scaleType="centerCrop"
             android:src="@drawable/img_nophoto"
             android:layout_weight="8"/>
         <TextView
@@ -29,6 +30,7 @@
             android:layout_weight="1"
             android:textSize="36sp"
             android:textAlignment="center"
+            android:textColor="@color/colorWhite"
             android:text="@string/name_placeholder"/>
         </LinearLayout>
     </LinearLayout>

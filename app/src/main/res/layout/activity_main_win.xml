@@ -22,7 +22,7 @@
             android:id="@+id/relative"
             android:layout_width="match_parent"
             android:layout_height="450dp"
-            android:background="@drawable/main_form_layout">
+            android:background="@color/colorSecondary">
 
             <ImageView
                 android:id="@+id/iv_food"
@@ -31,7 +31,7 @@
                 android:layout_below="@id/relative"
                 android:scaleType="fitXY"
                 tools:ignore="NotSibling"
-                tools:srcCompat="@drawable/eat_1" />
+                tools:srcCompat="@drawable/img_food_placeholder" />
 
             <ImageButton
                 android:id="@+id/ib_name"
@@ -43,7 +43,7 @@
                 android:layout_marginLeft="18dp"
                 android:layout_marginTop="18dp"
                 android:background="@drawable/button_left"
-                android:src="@drawable/icon" />
+                android:src="@drawable/ic_local_dining_white_24dp" />
 
             <ImageButton
                 android:id="@+id/ib_location"
@@ -64,7 +64,7 @@
                 android:layout_below="@id/iv_food"
                 android:layout_marginLeft="80dp"
                 android:layout_marginTop="32dp"
-                android:text="Mahorin Pizza"
+                android:text="Гуляш Домашний"
                 android:textColor="@color/colorWhite"
                 android:textSize="14sp" />
 
@@ -75,7 +75,7 @@
                 android:layout_below="@id/iv_food"
                 android:layout_marginLeft="80dp"
                 android:layout_marginTop="100dp"
-                android:text="11 restaurants near you"
+                android:text="11"
                 android:textColor="@color/colorWhite"
                 android:textSize="14sp" />
 
@@ -87,7 +87,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="32dp"
                 android:layout_marginRight="16dp"
-                android:text="48 p."
+                android:text="48"
                 android:textColor="@color/colorWhite"
                 android:textSize="14sp" />
 

@@ -1,4 +1,4 @@
-package com.smakhorin.doodoo;
+package com.smakhorin.doodoo.activity;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -19,10 +19,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.smakhorin.doodoo.R;
+import com.smakhorin.doodoo.UserDAO;
 
 public class RegistrationActivity extends AppCompatActivity {
-
-    private Button mRegister;
 
     private EditText mEmail, mPassword, mName;
 
@@ -51,7 +51,7 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         };
 
-        mRegister = findViewById(R.id.btRegister);
+        Button mRegister = findViewById(R.id.btRegister);
 
         mEmail = findViewById(R.id.email);
         mPassword = findViewById(R.id.password);
@@ -95,7 +95,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             currentUserDb.setValue(name);
                             currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userId).child("sex");
                             currentUserDb.setValue(radioButton.getText().toString());
-                            Intent intent = new Intent(RegistrationActivity.this,MainActivity.class);
+                            Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
                         }
@@ -107,7 +107,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(RegistrationActivity.this,LoginActivity.class);
+        Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

@@ -6,13 +6,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PlaceActivity">
+    tools:context=".activity.PlaceActivity">
 
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:alpha="0.8"
-        android:background="@drawable/gradient_bg" />
+        android:background="@drawable/gradient_reviews" />
 
     <FrameLayout
         android:id="@+id/frame_layout"

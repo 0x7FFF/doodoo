@@ -1,4 +1,4 @@
-package com.smakhorin.doodoo.FoodCard;
+package com.smakhorin.doodoo.foodcard;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,11 +15,9 @@ import java.util.List;
 
 public class FoodCardAdapter extends ArrayAdapter<FoodCard> {
 
-    Context context;
-
-    public FoodCardAdapter(Context context, int resourseId, List<FoodCard> items)
+    public FoodCardAdapter(Context context, int resourceId, List<FoodCard> items)
     {
-        super(context,resourseId,items);
+        super(context,resourceId,items);
     }
     public View getView(int position, View convertView, ViewGroup parent){
         FoodCard card_item = getItem(position);
@@ -28,13 +26,13 @@ public class FoodCardAdapter extends ArrayAdapter<FoodCard> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.activity_main_win, parent, false);
         }
 
-        TextView NamePoint = convertView.findViewById(R.id.tv_place_name);
+        TextView FoodName = convertView.findViewById(R.id.tv_place_name);
         ImageView image = convertView.findViewById(R.id.iv_food);
         TextView Price = convertView.findViewById(R.id.tv_price);
-        TextView HowPoint = convertView.findViewById(R.id.tv_near_count);
+        TextView LocationCount = convertView.findViewById(R.id.tv_near_count);
 
-        HowPoint.setText(card_item.getLocationCount());
-        NamePoint.setText(card_item.getName());
+        LocationCount.setText(card_item.getLocationCount());
+        FoodName.setText(card_item.getName());
         Price.setText(card_item.getPrice());
         //image.setImageResource(R.mipmap.ic_launcher);
         switch(card_item.getImageURL()) {
